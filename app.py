@@ -1,78 +1,74 @@
 from flask import Flask, render_template, request, jsonify
+from langdetect import detect
 
 app = Flask(__name__)
 
 # --- Chatbot logic with only if-else ---
 def chatbot_response(user_input):
-    user_input = user_input.lower()
+    try:
+        lang = detect(user_input)
+    except:
+        lang = "en"
 
-    # --- Greetings ---
-    if "hello" in user_input or "hi" in user_input:
-        return "Hello! I can answer math questions and tell you about AI. Ask me something!"
+    user_input_lower = user_input.lower()
 
-    elif "your name" in user_input:
-        return "I am your chatbot assistant."
+    # --- English Responses ---
+    if lang == "en":
+        if "hello" in user_input_lower or "hi" in user_input_lower:
+            return "Hello! I can answer math questions and tell you about AI. Ask me something!"
+        elif "your name" in user_input_lower:
+            return "I am Freddy, your chatbot assistant."
+        elif "bye" in user_input_lower:
+            return "Goodbye! Have a wonderful day!"
+        elif "what is ai" in user_input_lower or "ai" in user_input_lower:
+            return "AI (Artificial Intelligence) is the simulation of human intelligence by machines."
+        elif "machine learning" in user_input_lower:
+            return "Machine Learning is a subset of AI that enables machines to learn from data without explicit programming."
+        elif "deep learning" in user_input_lower:
+            return "Deep Learning is a branch of machine learning using neural networks with many layers to model complex patterns."
+        elif "nlp" in user_input_lower or "natural language processing" in user_input_lower:
+            return "NLP helps computers understand human language."
+        elif "add" in user_input_lower or "+" in user_input_lower:
+            parts = [int(s) for s in user_input_lower.replace("+", " ").split() if s.isdigit()]
+            if len(parts) == 2:
+                return f"The answer is {parts[0] + parts[1]}"
+            return "Please ask like: add 5 and 10"
+        else:
+            return "I can answer math (add, subtract, multiply, divide, square) and AI basics. Try asking me!"
 
-    elif "bye" in user_input:
-        return "Goodbye! Have a wonderful day!"
+    # --- Hindi Responses ---
+    elif lang == "hi":
+        if "namaste" in user_input_lower or "hello" in user_input_lower:
+            return "नमस्ते! मैं गणित और AI से जुड़े प्रश्नों का उत्तर दे सकता हूँ।"
+        elif "tumhara naam" in user_input_lower or "name" in user_input_lower:
+            return "मेरा नाम Freddy है।"
+        elif "alvida" in user_input_lower or "bye" in user_input_lower:
+            return "अलविदा! आपका दिन शुभ हो।"
+        elif "ai" in user_input_lower:
+            return "AI का मतलब कृत्रिम बुद्धिमत्ता है।"
+        elif "jodo" in user_input_lower or "add" in user_input_lower:
+            return "जोड़ने के लिए कृपया उदाहरण दें: 5 + 10"
+        else:
+            return "मैं गणित और AI के बारे में हिंदी में भी बता सकता हूँ।"
 
-    # --- AI Knowledge ---
-    elif "what is ai" in user_input or "ai" in user_input:
-        return "AI (Artificial Intelligence) is the simulation of human intelligence by machines."
-    elif "machine learning" in user_input:
-        return "Machine Learning is a subset of AI that enables machines to learn from data without explicit programming."
-    elif "deep learning" in user_input:
-        return "Deep Learning is a branch of machine learning using neural networks with many layers to model complex patterns."
-    elif "neural network" in user_input:
-        return "A Neural Network is a system of algorithms inspired by the human brain that recognizes patterns."
-    elif "natural language processing" in user_input or "nlp" in user_input:
-        return "Natural Language Processing (NLP) is a field of AI that helps machines understand and process human language."
-
-    # --- Basic Math ---
-    elif "add" in user_input or "+" in user_input:
-        parts = [int(s) for s in user_input.replace("+", " ").split() if s.isdigit()]
-        if len(parts) == 2:
-            return f"The answer is {parts[0] + parts[1]}"
-        return "Please ask like: add 5 and 10"
-
-    elif "subtract" in user_input or "-" in user_input:
-        parts = [int(s) for s in user_input.replace("-", " ").split() if s.isdigit()]
-        if len(parts) == 2:
-            return f"The answer is {parts[0] - parts[1]}"
-        return "Please ask like: subtract 10 and 5"
-
-    elif "multiply" in user_input or "into" in user_input or "times" in user_input or "*" in user_input:
-        parts = [int(s) for s in user_input.replace("*", " ").split() if s.isdigit()]
-        if len(parts) == 2:
-            return f"The answer is {parts[0] * parts[1]}"
-        return "Please ask like: multiply 4 and 6"
-
-    elif "divide" in user_input or "divided by" in user_input or "/" in user_input:
-        parts = [int(s) for s in user_input.replace("/", " ").split() if s.isdigit()]
-        if len(parts) == 2:
-            if parts[1] == 0:
-                return "Division by zero is not allowed."
-            return f"The answer is {parts[0] / parts[1]}"
-        return "Please ask like: divide 20 by 5"
-
-    elif "square root" in user_input:
-        for word in user_input.split():
-            if word.isdigit():
-                num = int(word)
-                return f"The square root of {num} is {num**0.5}"
-        return "Please ask like: square root of 25"
-
-    elif "square" in user_input:
-        for word in user_input.split():
-            if word.isdigit():
-                num = int(word)
-                return f"The square of {num} is {num**2}"
-        return "Please ask like: square of 7"
+    # --- Spanish Responses ---
+    elif lang == "es":
+        if "hola" in user_input_lower:
+            return "¡Hola! Puedo responder preguntas de matemáticas y de IA."
+        elif "tu nombre" in user_input_lower:
+            return "Mi nombre es Freddy."
+        elif "adiós" in user_input_lower or "bye" in user_input_lower:
+            return "¡Adiós! Que tengas un gran día."
+        elif "ai" in user_input_lower:
+            return "La IA es inteligencia artificial: máquinas que imitan la inteligencia humana."
+        elif "sumar" in user_input_lower or "add" in user_input_lower:
+            return "Por favor pregunta como: sumar 5 y 10"
+        else:
+            return "Puedo responder preguntas de matemáticas y conceptos básicos de IA en español."
 
     # --- Fallback ---
     else:
-        return "I can answer basic math (add, subtract, multiply, divide, square, square root) and basic AI concepts (AI, ML, Deep Learning, NLP). Try asking me!"
-    
+        return f"Sorry, I don’t support full responses in '{lang}' yet. Try English, Hindi, or Spanish."
 
 @app.route("/")
 def index():
