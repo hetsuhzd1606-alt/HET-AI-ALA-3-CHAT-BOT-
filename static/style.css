@@ -1,71 +1,155 @@
+/* --- General Layout --- */
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #74ABE2, #5563DE, #8A4FFF);
+  background-size: 300% 300%;
+  animation: gradientMove 10s ease infinite;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  margin: 0;
 }
 
+/* --- Gradient Animation --- */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --- Chat Container --- */
 .chat-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-  width: 400px;
-  max-height: 600px;
+  border-radius: 20px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 420px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
 }
 
+.chat-container:hover {
+  transform: scale(1.02);
+}
+
+/* --- Title --- */
 h2 {
   text-align: center;
   margin-bottom: 15px;
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
+/* --- Chat Box --- */
 #chat-box {
   flex-grow: 1;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px;
   overflow-y: auto;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #f9f9f9, #f0f0f8);
+  box-shadow: inset 0px 2px 8px rgba(0,0,0,0.05);
 }
 
+/* --- User and Bot Messages --- */
 .user {
   text-align: right;
-  margin: 5px;
-  color: blue;
+  margin: 8px 0;
+}
+
+.user span {
+  background: linear-gradient(135deg, #4CAF50, #2E8B57);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 16px 16px 0 16px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .bot {
   text-align: left;
-  margin: 5px;
-  color: green;
+  margin: 8px 0;
 }
 
+.bot span {
+  background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
+  color: #333;
+  padding: 10px 14px;
+  border-radius: 16px 16px 16px 0;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Input Area --- */
 .input-area {
   display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #user-input {
   flex-grow: 1;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
   border: 1px solid #ccc;
   outline: none;
+  transition: 0.3s;
+  font-size: 15px;
 }
 
+#user-input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* --- Send Button --- */
 button {
-  margin-left: 5px;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border: none;
-  border-radius: 8px;
-  background: #4CAF50;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4CAF50, #81C784);
   color: white;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 button:hover {
-  background: #45a049;
+  background: linear-gradient(135deg, #45a049, #66BB6A);
+  transform: translateY(-2px);
+}
+
+/* --- Scrollbar Styling --- */
+#chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #74ABE2, #5563DE);
+  border-radius: 3px;
+}
+
+/* --- Responsive Design --- */
+@media screen and (max-width: 480px) {
+  .chat-container {
+    width: 95%;
+    padding: 15px;
+    max-height: 85vh;
+  }
+
+  button {
+    padding: 8px 12px;
+  }
+
+  #user-input {
+    font-size: 14px;
+  }
 }
