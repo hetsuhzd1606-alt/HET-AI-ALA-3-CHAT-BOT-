@@ -1,38 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Freddy 🤖</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Freddy Chatbot 🤖</title>
+    <style>
+        body { font-family: Arial; background: #f1f1f1; }
+        #chatbox { width: 400px; margin: 40px auto; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .botText, .userText { margin: 10px 0; }
+        .botText span { background: #e2e2ff; padding: 8px; border-radius: 6px; display: inline-block; }
+        .userText span { background: #d1ffd1; padding: 8px; border-radius: 6px; display: inline-block; float: right; }
+        #inputArea { margin-top: 10px; }
+        input { width: 85%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #45a049; }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <h2>Freddy 🤖</h2>
-    <div id="chat-box"></div>
-    <input type="text" id="user-input" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
-  </div>
+    <div id="chatbox">
+        <h2>Freddy Chatbot 🤖</h2>
+        <div id="chatlog"></div>
+        <div id="inputArea">
+            <input type="text" id="userInput" placeholder="Type your message..." autofocus>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
-  <script>
-    async function sendMessage() {
-      let userInput = document.getElementById("user-input").value;
-      if (!userInput) return;
+    <script>
+        const inputField = document.getElementById("userInput");
+        const chatlog = document.getElementById("chatlog");
 
-      let chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML += `<div class="user">You: ${userInput}</div>`;
+        inputField.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
 
-      document.getElementById("user-input").value = "";
+        function sendMessage() {
+            const userText = inputField.value.trim();
+            if (userText === "") return;
+            chatlog.innerHTML += `<div class="userText"><span>${userText}</span></div>`;
+            inputField.value = "";
 
-      let response = await fetch("/get", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userInput })
-      });
-
-      let data = await response.json();
-      chatBox.innerHTML += `<div class="bot">Freddy: ${data.reply}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+            fetch("/get", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userText })
+            })
+            .then(res => res.json())
+            .then(data => {
+                chatlog.innerHTML += `<div class="botText"><span>${data.reply}</span></div>`;
+                chatlog.scrollTop = chatlog.scrollHeight;
+            });
+        }
+    </script>
 </body>
 </html>
+
