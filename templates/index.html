@@ -3,42 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Freddy Chatbot 🤖</title>
-    <style>
-        body { font-family: Arial; background: #f1f1f1; }
-        #chatbox { width: 400px; margin: 40px auto; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .botText, .userText { margin: 10px 0; }
-        .botText span { background: #e2e2ff; padding: 8px; border-radius: 6px; display: inline-block; }
-        .userText span { background: #d1ffd1; padding: 8px; border-radius: 6px; display: inline-block; float: right; }
-        #inputArea { margin-top: 10px; }
-        input { width: 85%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
-        button { padding: 10px 15px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        button:hover { background: #45a049; }
-    </style>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    <div id="chatbox">
+    <div class="chat-container">
         <h2>Freddy Chatbot 🤖</h2>
-        <div id="chatlog"></div>
-        <div id="inputArea">
-            <input type="text" id="userInput" placeholder="Type your message..." autofocus>
-            <button onclick="sendMessage()">Send</button>
+        <div id="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type or speak your message..." autofocus>
+            <button id="voice-btn" title="Speak"><span>🎤</span></button>
+            <button id="send-btn">Send</button>
         </div>
     </div>
 
     <script>
-        const inputField = document.getElementById("userInput");
-        const chatlog = document.getElementById("chatlog");
+        const chatBox = document.getElementById("chat-box");
+        const inputField = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+        const voiceBtn = document.getElementById("voice-btn");
 
-        inputField.addEventListener("keypress", function(e) {
-            if (e.key === "Enter") {
-                sendMessage();
-            }
+        // --- Send message on button click or Enter ---
+        sendBtn.addEventListener("click", sendMessage);
+        inputField.addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
         });
 
+        // --- Send Message Function ---
         function sendMessage() {
             const userText = inputField.value.trim();
             if (userText === "") return;
-            chatlog.innerHTML += `<div class="userText"><span>${userText}</span></div>`;
+
+            addMessage("user", userText);
             inputField.value = "";
 
             fetch("/get", {
@@ -48,11 +43,48 @@
             })
             .then(res => res.json())
             .then(data => {
-                chatlog.innerHTML += `<div class="botText"><span>${data.reply}</span></div>`;
-                chatlog.scrollTop = chatlog.scrollHeight;
+                addMessage("bot", data.reply);
+                speakText(data.reply);  // Freddy speaks here 🎤
             });
+        }
+
+        // --- Add message to chat box ---
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add(sender);
+            messageDiv.innerHTML = `<span>${text}</span>`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // --- Voice Input (Speech → Text) ---
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+
+        voiceBtn.addEventListener("click", () => {
+            recognition.start();
+            voiceBtn.innerText = "🎙️ Listening...";
+        });
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript;
+            inputField.value = spokenText;
+            sendMessage();  // auto-send after speaking
+            voiceBtn.innerText = "🎤";
+        };
+
+        recognition.onend = () => {
+            voiceBtn.innerText = "🎤";
+        };
+
+        // --- Voice Output (Text → Speech) ---
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
         }
     </script>
 </body>
 </html>
-
