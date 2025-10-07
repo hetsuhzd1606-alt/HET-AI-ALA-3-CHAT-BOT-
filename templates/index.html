@@ -2,18 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freddy Chatbot 🤖</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="chat-container">
         <h2>Freddy Chatbot 🤖</h2>
         <div id="chat-box"></div>
-        <div id="typing-indicator" style="display:none;">Freddy is typing...</div>
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type or speak your message..." autofocus>
-            <button id="voice-btn" title="Speak">🎤</button>
+            <button id="voice-btn" title="Speak"><span>🎤</span></button>
             <button id="send-btn">Send</button>
         </div>
     </div>
@@ -23,7 +21,6 @@
         const inputField = document.getElementById("user-input");
         const sendBtn = document.getElementById("send-btn");
         const voiceBtn = document.getElementById("voice-btn");
-        const typingIndicator = document.getElementById("typing-indicator");
 
         // --- Send message on button click or Enter ---
         sendBtn.addEventListener("click", sendMessage);
@@ -34,12 +31,10 @@
         // --- Send Message Function ---
         function sendMessage() {
             const userText = inputField.value.trim();
-            if (!userText) return;
+            if (userText === "") return;
 
             addMessage("user", userText);
             inputField.value = "";
-
-            typingIndicator.style.display = "block";
 
             fetch("/get", {
                 method: "POST",
@@ -48,13 +43,8 @@
             })
             .then(res => res.json())
             .then(data => {
-                typingIndicator.style.display = "none";
                 addMessage("bot", data.reply);
-                speakText(data.reply); // Voice output
-            })
-            .catch(err => {
-                typingIndicator.style.display = "none";
-                addMessage("bot", "Oops! Something went wrong. Please try again.");
+                speakText(data.reply);  // Freddy speaks here 🎤
             });
         }
 
@@ -79,7 +69,7 @@
         recognition.onresult = (event) => {
             const spokenText = event.results[0][0].transcript;
             inputField.value = spokenText;
-            sendMessage();  // Auto-send after speaking
+            sendMessage();  // auto-send after speaking
             voiceBtn.innerText = "🎤";
         };
 
@@ -98,3 +88,4 @@
     </script>
 </body>
 </html>
+
