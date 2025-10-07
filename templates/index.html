@@ -3,7 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <title>Freddy Chatbot 🤖</title>
-    <link rel="stylesheet" href="static/style.css">
+    <!-- ✅ Flask-friendly static path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* --- Chat Styling --- */
+        body {
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            background: #ffffff;
+            width: 400px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 5px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #send-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        #send-btn:hover {
+            background: #0056b3;
+        }
+
+        #voice-btn {
+            background: #00c6ff;
+            color: white;
+        }
+
+        #voice-btn:hover {
+            background: #009ddc;
+        }
+
+        .user span {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px 0;
+            align-self: flex-end;
+        }
+
+        .bot span {
+            background-color: #eaeaea;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px 0;
+            align-self: flex-start;
+        }
+
+        /* Typing animation */
+        .typing {
+            font-style: italic;
+            color: gray;
+            animation: blink 1s steps(2, start) infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="chat-container">
@@ -43,8 +156,18 @@
             })
             .then(res => res.json())
             .then(data => {
-                addMessage("bot", data.reply);
-                speakText(data.reply);  // Freddy speaks here 🎤
+                // --- Typing effect ---
+                const typingDiv = document.createElement("div");
+                typingDiv.classList.add("bot");
+                typingDiv.innerHTML = `<span class="typing">Freddy is typing...</span>`;
+                chatBox.appendChild(typingDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                setTimeout(() => {
+                    typingDiv.remove();
+                    addMessage("bot", data.reply);
+                    speakText(data.reply);  // Freddy speaks 🎤
+                }, 800);
             });
         }
 
@@ -81,8 +204,221 @@
         function speakText(text) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "en-US";
-            utterance.rate = 1;
-            utterance.pitch = 1;
+            utterance.rate = 1.05;
+            utterance.pitch = 1.1;
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Freddy Chatbot 🤖</title>
+    <!-- ✅ Flask-friendly static path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* --- Chat Styling --- */
+        body {
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            background: #ffffff;
+            width: 400px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 5px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #send-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        #send-btn:hover {
+            background: #0056b3;
+        }
+
+        #voice-btn {
+            background: #00c6ff;
+            color: white;
+        }
+
+        #voice-btn:hover {
+            background: #009ddc;
+        }
+
+        .user span {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px 0;
+            align-self: flex-end;
+        }
+
+        .bot span {
+            background-color: #eaeaea;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px 0;
+            align-self: flex-start;
+        }
+
+        /* Typing animation */
+        .typing {
+            font-style: italic;
+            color: gray;
+            animation: blink 1s steps(2, start) infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Freddy Chatbot 🤖</h2>
+        <div id="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type or speak your message..." autofocus>
+            <button id="voice-btn" title="Speak"><span>🎤</span></button>
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const inputField = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+        const voiceBtn = document.getElementById("voice-btn");
+
+        // --- Send message on button click or Enter ---
+        sendBtn.addEventListener("click", sendMessage);
+        inputField.addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        // --- Send Message Function ---
+        function sendMessage() {
+            const userText = inputField.value.trim();
+            if (userText === "") return;
+
+            addMessage("user", userText);
+            inputField.value = "";
+
+            fetch("/get", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userText })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // --- Typing effect ---
+                const typingDiv = document.createElement("div");
+                typingDiv.classList.add("bot");
+                typingDiv.innerHTML = `<span class="typing">Freddy is typing...</span>`;
+                chatBox.appendChild(typingDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                setTimeout(() => {
+                    typingDiv.remove();
+                    addMessage("bot", data.reply);
+                    speakText(data.reply);  // Freddy speaks 🎤
+                }, 800);
+            });
+        }
+
+        // --- Add message to chat box ---
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add(sender);
+            messageDiv.innerHTML = `<span>${text}</span>`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // --- Voice Input (Speech → Text) ---
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+
+        voiceBtn.addEventListener("click", () => {
+            recognition.start();
+            voiceBtn.innerText = "🎙️ Listening...";
+        });
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript;
+            inputField.value = spokenText;
+            sendMessage();  // auto-send after speaking
+            voiceBtn.innerText = "🎤";
+        };
+
+        recognition.onend = () => {
+            voiceBtn.innerText = "🎤";
+        };
+
+        // --- Voice Output (Text → Speech) ---
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 1.05;
+            utterance.pitch = 1.1;
             speechSynthesis.speak(utterance);
         }
     </script>
